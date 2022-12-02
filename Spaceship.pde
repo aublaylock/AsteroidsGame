@@ -1,8 +1,8 @@
-class Spaceship extends Floater{
+class Spaceship extends Floater {
   private int maxSpeed;
-  Spaceship(){
+  public Spaceship(){
     corners = 3;
-    xCorners = new int[]{0,50,0};
+    xCorners = new int[]{-25,25,-25};
     yCorners = new int[]{-25,0,25};
     myColor = 255;
     myCenterX = 500;
@@ -32,5 +32,14 @@ class Spaceship extends Floater{
     myXspeed = 0;
     myYspeed = 0;
     myPointDirection = Math.random()*360;
+  }
+  public double getX(){
+    return this.myCenterX;
+  }
+  public double getY(){
+    return this.myCenterY;
+  }
+  public double getPointDirection(){
+    return this.myPointDirection;
   }
 }
