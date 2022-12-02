@@ -1,10 +1,25 @@
 Spaceship ship = new Spaceship();
+
+ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>();
+ArrayList<Asteroid> asteroidsAfterCollisions = new ArrayList<Asteroid>();
+
 Star [] stars = new Star[200];
+
+ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+ArrayList<Bullet> bulletsAfterDecay = new ArrayList<Bullet>();
+
+public static int ASTEROID_LARGE = 50;
 boolean wPressed, aPressed, dPressed, sPressed;
+
 void setup(){
   size(1000,1000);
+  
   for(int i = 0; i<stars.length; i++){
     stars[i] = new Star();
+  }
+  
+  for(int i = 0; i<5; i++){
+    asteroids.add(new Asteroid(10, ASTEROID_LARGE, Math.random()*1000,Math.random()*1000));
   }
 }
 void draw(){
@@ -17,6 +32,27 @@ void draw(){
   ship.show();
   ship.move();
     
+  //Asteroids
+  for(Asteroid asteroid:asteroids){
+    if(dist((float)asteroid.getX(), (float)asteroid.getY(), (float)ship.getX(), (float)ship.getY())>asteroid.getSize()){
+      asteroidsAfterCollisions.add(asteroid);
+    }
+    asteroid.move();
+    asteroid.show();
+  }
+  asteroids = asteroidsAfterCollisions;
+  asteroidsAfterCollisions = new ArrayList<Asteroid>();
+  //Bullets
+  for(Bullet bullet:bullets){
+    bullet.move();
+    bullet.show();
+    bullet.decay();
+    if(bullet.getTimer()>0)
+      bulletsAfterDecay.add(bullet);
+  }
+  bullets = bulletsAfterDecay;
+  bulletsAfterDecay = new ArrayList<Bullet>();
+  
   //movement
   if(wPressed){
     ship.accelerate(0.25);
@@ -29,20 +65,23 @@ void draw(){
   }
 }
 void keyPressed(){
-  if(key == 'w')
+  if(key == 'w' || key == 'W')
     wPressed = true;
     
-  if(key == 'a')
+  if(key == 'a' || key == 'A')
     aPressed = true;
     
-  if(key == 'd')
+  if(key == 'd' || key == 'D')
     dPressed = true;
     
-  if(key == 's')
+  if(key == 's' || key == 'S')
     sPressed = true;
     
   if(key == ' ')
     ship.hyperJump();
+  
+  if(keyCode == SHIFT)
+    bullets.add(new Bullet(ship.getX(), ship.getY(), ship.getPointDirection()));
 }
 void keyReleased(){
   if(key == 'w')
