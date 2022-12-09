@@ -1,4 +1,5 @@
 Spaceship ship = new Spaceship();
+int level = 5;
 
 ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>();
 ArrayList<Asteroid> asteroidsAfterCollisions = new ArrayList<Asteroid>();
@@ -34,7 +35,7 @@ void draw(){
     
   //Asteroids
   for(Asteroid asteroid:asteroids){
-    if(dist((float)asteroid.getX(), (float)asteroid.getY(), (float)ship.getX(), (float)ship.getY())>asteroid.getSize()){
+    if(dist((float)asteroid.getX(), (float)asteroid.getY(), (float)ship.getX(), (float)ship.getY())>asteroid.getSize()+10){
       asteroidsAfterCollisions.add(asteroid);
     }
     asteroid.move();
@@ -53,6 +54,26 @@ void draw(){
   bullets = bulletsAfterDecay;
   bulletsAfterDecay = new ArrayList<Bullet>();
   
+  //Bullet & Asteroid collision
+  boolean bulletIsValid = true;
+  for(Bullet bullet:bullets){
+    for(Asteroid asteroid:asteroids){
+      if(dist((float)asteroid.getX(), (float)asteroid.getY(), (float)bullet.getX(), (float)bullet.getY())>asteroid.getSize()){
+        asteroidsAfterCollisions.add(asteroid);
+      }
+      else{
+        bulletIsValid = false;
+      }
+    }
+    asteroids = asteroidsAfterCollisions;
+    asteroidsAfterCollisions = new ArrayList<Asteroid>();
+    if(bulletIsValid){
+      bulletsAfterDecay.add(bullet);
+    }
+  }
+  bullets = bulletsAfterDecay;
+  bulletsAfterDecay = new ArrayList<Bullet>();
+  
   //movement
   if(wPressed){
     ship.accelerate(0.25);
@@ -62,6 +83,17 @@ void draw(){
   }
   if(dPressed){
     ship.turn(3);
+  }
+  
+  //RESET
+  if(asteroids.size() == 0){
+    level++;
+    ship = new Spaceship();
+    
+    for(int i = 0; i<level; i++){
+      asteroids.add(new Asteroid(10, ASTEROID_LARGE, Math.random()*1000,Math.random()*1000));
+    }
+    bullets = new ArrayList<Bullet>();
   }
 }
 void keyPressed(){
@@ -81,7 +113,7 @@ void keyPressed(){
     ship.hyperJump();
   
   if(keyCode == SHIFT)
-    bullets.add(new Bullet(ship.getX(), ship.getY(), ship.getPointDirection()));
+    bullets.add(new Bullet(ship));
 }
 void keyReleased(){
   if(key == 'w')
